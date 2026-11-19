@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Интерактивный кроссворд по английской лексике: учёба в вузе, наука и международное сотрудничество.">
+  <meta name="theme-color" content="#f1ecdf">
+  <title>Кроссворд · Учёба и наука — English Vocabulary</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d2632'/%3E%3Cg fill='%23fffdf7'%3E%3Crect x='12' y='12' width='16' height='16' rx='2'/%3E%3Crect x='36' y='12' width='16' height='16' rx='2'/%3E%3Crect x='12' y='36' width='16' height='16' rx='2'/%3E%3C/g%3E%3Crect x='36' y='36' width='16' height='16' rx='2' fill='%23f3d7ac'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero__text">
+        <p class="eyebrow">
+          <span class="eyebrow__mark" aria-hidden="true"></span>
+          English vocabulary · crossword
+        </p>
+        <h1>Учёба, наука и&nbsp;сотрудничество</h1>
+        <p class="subtitle">
+          Разгадайте кроссворд из 20 английских слов о вузе, исследованиях
+          и международных связях. Вопросы — по-русски, ответы — по-английски.
+        </p>
+      </div>
+      <div class="stats" aria-label="Статистика">
+        <div class="stat">
+          <span class="stat__value" id="statProgress">0%</span>
+          <span class="stat__label">заполнено</span>
+        </div>
+        <div class="stat stat--divider">
+          <span class="stat__value" id="statTime">00:00</span>
+          <span class="stat__label">время</span>
+        </div>
+        <div class="stat stat--words">
+          <span class="stat__value"><span id="statWords">0</span><span class="stat__slash">/</span><span id="statWordTotal">20</span></span>
+          <span class="stat__label">слов</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="board" aria-label="Кроссворд">
+        <div class="board__head">
+          <button class="current-clue" id="currentClue" type="button" aria-live="polite" title="Сменить направление, если есть пересечение">
+            <span class="current-clue__meta">
+              <span class="direction-badge" id="clueDirection">→</span>
+              <span class="current-clue__number" id="clueNumber">1</span>
+              <span class="current-clue__type" id="clueType">По горизонтали</span>
+            </span>
+            <span class="current-clue__text" id="clueText">Выберите слово в сетке или в списке вопросов</span>
+          </button>
+          <div class="clue-nav" role="group" aria-label="Переключение слов">
+            <button class="icon-btn" id="prevWord" type="button" aria-label="Предыдущее слово" title="Предыдущее слово">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="icon-btn" id="nextWord" type="button" aria-label="Следующее слово" title="Следующее слово">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-wrap">
+          <div class="grid-scroller" id="gridScroller">
+            <div class="grid" id="grid" role="grid" aria-label="Сетка кроссворда"></div>
+          </div>
+          <div class="grid-fade grid-fade--left" aria-hidden="true"></div>
+          <div class="grid-fade grid-fade--right" aria-hidden="true"></div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress" role="progressbar" aria-label="Заполнено клеток" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+            <div class="progress__fill" id="progressFill"></div>
+          </div>
+          <span class="progress__label" id="progressLabel">0 из 152 букв</span>
+          <div class="zoom" role="group" aria-label="Масштаб сетки">
+            <button class="icon-btn" id="zoomOut" type="button" aria-label="Уменьшить" title="Уменьшить">−</button>
+            <button class="icon-btn" id="zoomIn" type="button" aria-label="Увеличить" title="Увеличить">+</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar__group">
+            <button class="btn btn--primary" id="checkBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              Проверить
+            </button>
+            <button class="btn" id="hintBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg>
+              Подсказка
+            </button>
+            <button class="btn" id="revealWordBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              Открыть слово
+            </button>
+            <button class="btn" id="revealAllBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 12h8M12 8v8"/></svg>
+              Ответы
+            </button>
+            <button class="btn btn--quiet" id="resetBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+              Заново
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="clues" aria-label="Вопросы кроссворда">
+        <section class="clue-group">
+          <h2 class="clue-group__title">
+            <span class="clue-group__arrow" aria-hidden="true">→</span>
+            По горизонтали
+          </h2>
+          <ol class="clue-list" id="acrossList"></ol>
+        </section>
+        <section class="clue-group">
+          <h2 class="clue-group__title">
+            <span class="clue-group__arrow clue-group__arrow--down" aria-hidden="true">↓</span>
+            По вертикали
+          </h2>
+          <ol class="clue-list" id="downList"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>20 слов · на основе лексики об учёбе, науке и сотрудничестве</p>
+      <p class="footer__hint">Клик — выбрать слово, повторный клик — сменить направление, Tab — следующее слово. Дефисы и пробелы не вписываются.</p>
+    </footer>
+  </div>
+
+  <dialog class="win" id="winDialog" aria-labelledby="winTitle">
+    <div class="win__confetti" id="confetti" aria-hidden="true"></div>
+    <div class="win__inner">
+      <div class="win__badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M7 5H4v2a4 4 0 0 0 4 4M17 5h3v2a4 4 0 0 1-4 4"/></svg>
+      </div>
+      <h2 id="winTitle">Кроссворд разгадан!</h2>
+      <p class="win__text" id="winText">Все 20 слов на своих местах.</p>
+      <div class="win__stats">
+        <div><span id="winTime">00:00</span><small>время</small></div>
+        <div><span id="winHints">0</span><small>подсказок</small></div>
+      </div>
+      <div class="win__actions">
+        <button class="btn btn--primary" id="winRestart" type="button">Ещё раз</button>
+        <button class="btn" id="winClose" type="button">Посмотреть сетку</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="puzzle.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
