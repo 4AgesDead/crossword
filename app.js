@@ -17,6 +17,7 @@
   };
   const OTHER = { across: 'down', down: 'across' };
   const STORAGE_KEY = 'crossword-study-science-v1';
+  const THEME_KEY = 'crossword-theme';
   const PUZZLE_SIGNATURE = (() => {
     const source = JSON.stringify(
       PUZZLE.words.map((word) => [
@@ -39,7 +40,6 @@
   const keyOf = (row, col) => `${row},${col}`;
 
   const els = {
-    statProgress: $('#statProgress'),
     statTime: $('#statTime'),
     statWords: $('#statWords'),
     statWordTotal: $('#statWordTotal'),
@@ -74,6 +74,7 @@
     winClose: $('#winClose'),
     confetti: $('#confetti'),
     toast: $('#toast'),
+    themeToggle: $('#themeToggle'),
   };
 
   /** @type {Map<string, any>} */
@@ -727,7 +728,6 @@
     const total = cells.size || 1;
     const percent = Math.round((filled / total) * 100);
 
-    els.statProgress.textContent = `${percent}%`;
     els.statWords.textContent = String(completeWords);
     els.progressFill.style.width = `${percent}%`;
     els.progressBar.setAttribute('aria-valuenow', String(percent));
@@ -1155,6 +1155,61 @@
   }
 
   /* ------------------------------------------------------------
+     Тема оформления
+     ------------------------------------------------------------ */
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+  function applyTheme(theme, persist) {
+    const dark = theme === 'dark';
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+
+    if (els.themeToggle) {
+      els.themeToggle.setAttribute('aria-checked', String(dark));
+    }
+
+    if (themeMeta) {
+      themeMeta.setAttribute('content', dark ? '#0e1216' : '#f1ecdf');
+    }
+
+    if (persist) {
+      try {
+        window.localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+      } catch (error) {
+        /* localStorage может быть недоступен — это не критично */
+      }
+    }
+  }
+
+  function bindTheme() {
+    if (!els.themeToggle) return;
+
+    applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light', false);
+
+    els.themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(next, true);
+    });
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const onSystemChange = (event) => {
+      let stored = null;
+      try {
+        stored = window.localStorage.getItem(THEME_KEY);
+      } catch (error) {
+        stored = null;
+      }
+      if (stored !== 'dark' && stored !== 'light') {
+        applyTheme(event.matches ? 'dark' : 'light', false);
+      }
+    };
+
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', onSystemChange);
+    }
+  }
+
+  /* ------------------------------------------------------------
      События интерфейса
      ------------------------------------------------------------ */
 
@@ -1219,6 +1274,7 @@
     buildModel();
     buildGrid();
     buildClues();
+    bindTheme();
     bindControls();
 
     els.statWordTotal.textContent = String(allWords.length);

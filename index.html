@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Интерактивный кроссворд по английской лексике: учёба в вузе, наука и международное сотрудничество.">
   <meta name="theme-color" content="#f1ecdf">
+  <meta name="color-scheme" content="light dark">
   <title>Кроссворд · Учёба и наука — English Vocabulary</title>
+  <script>
+    (() => {
+      const stored = (() => {
+        try {
+          return window.localStorage.getItem('crossword-theme');
+        } catch (error) {
+          return null;
+        }
+      })();
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme =
+        stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d2632'/%3E%3Cg fill='%23fffdf7'%3E%3Crect x='12' y='12' width='16' height='16' rx='2'/%3E%3Crect x='36' y='12' width='16' height='16' rx='2'/%3E%3Crect x='12' y='36' width='16' height='16' rx='2'/%3E%3C/g%3E%3Crect x='36' y='36' width='16' height='16' rx='2' fill='%23f3d7ac'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,28 +28,31 @@
   <div class="page">
     <header class="hero">
       <div class="hero__text">
-        <p class="eyebrow">
-          <span class="eyebrow__mark" aria-hidden="true"></span>
-          English vocabulary · crossword
-        </p>
-        <h1>Учёба, наука и&nbsp;сотрудничество</h1>
-        <p class="subtitle">
-          Разгадайте кроссворд из 20 английских слов о вузе, исследованиях
-          и международных связях. Вопросы — по-русски, ответы — по-английски.
-        </p>
+        <h1>CROSSWORD</h1>
       </div>
-      <div class="stats" aria-label="Статистика">
-        <div class="stat">
-          <span class="stat__value" id="statProgress">0%</span>
-          <span class="stat__label">заполнено</span>
-        </div>
-        <div class="stat stat--divider">
-          <span class="stat__value" id="statTime">00:00</span>
-          <span class="stat__label">время</span>
-        </div>
-        <div class="stat stat--words">
-          <span class="stat__value"><span id="statWords">0</span><span class="stat__slash">/</span><span id="statWordTotal">20</span></span>
-          <span class="stat__label">слов</span>
+      <div class="hero__side">
+        <button class="theme-switch" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Тёмная тема" title="Переключить тему">
+          <span class="theme-switch__track" aria-hidden="true">
+            <span class="theme-switch__thumb">
+              <svg class="theme-switch__icon theme-switch__icon--sun" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+              </svg>
+              <svg class="theme-switch__icon theme-switch__icon--moon" viewBox="0 0 24 24">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+              </svg>
+            </span>
+          </span>
+        </button>
+        <div class="stats" aria-label="Статистика">
+          <div class="stat">
+            <span class="stat__value" id="statTime">00:00</span>
+            <span class="stat__label">время</span>
+          </div>
+          <div class="stat stat--words stat--divider">
+            <span class="stat__value"><span id="statWords">0</span><span class="stat__slash">/</span><span id="statWordTotal">20</span></span>
+            <span class="stat__label">слов</span>
+          </div>
         </div>
       </div>
     </header>
